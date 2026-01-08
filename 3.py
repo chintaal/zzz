@@ -3,10 +3,16 @@ from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, classification_report
 
+print("="*50)
+print("Naive Bayes Classifier")
+print("="*50)
+
 # Load data
 iris = load_iris()
 X, y = iris.data, iris.target
 class_names = iris.target_names
+print(f"✓ Dataset loaded: {X.shape[0]} samples")
+print(f"  Classes: {', '.join(class_names)}")
 
 class NaiveBayes:
     def fit(self, X, y):
@@ -32,15 +38,26 @@ class NaiveBayes:
         return np.exp(-(x - mean)**2 / (2 * var)) / np.sqrt(2 * np.pi * var)
 
 # Train & Test
+test_size = float(input("\nEnter test split ratio (default 0.3): ") or 0.3)
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.3, random_state=1
+    X, y, test_size=test_size, random_state=1
 )
+print(f"✓ Split: {len(X_train)} training, {len(X_test)} test samples")
 
 nb = NaiveBayes()
+print("\n→ Training Naive Bayes classifier...")
 nb.fit(X_train, y_train)
-y_pred = nb.predict(X_test)
+print("✓ Training complete")
+print(f"  Computed priors: {nb.priors}")
 
-print("Accuracy:", np.mean(y_pred == y_test))
-print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
-print("Classification Report:\n",
-      classification_report(y_test, y_pred, target_names=class_names))
+print(f"\n→ Making predictions on {len(X_test)} test samples...")
+y_pred = nb.predict(X_test)
+print("✓ Predictions complete\n")
+
+accuracy = np.mean(y_pred == y_test)
+print(f"📊 Results:")
+print(f"  Accuracy: {accuracy:.2%}")
+print(f"\nConfusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+print(f"\nClassification Report:")
+print(classification_report(y_test, y_pred, target_names=class_names))
